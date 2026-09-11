@@ -23,8 +23,6 @@ body {
 
 body {
     display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .browser {
@@ -58,15 +56,6 @@ body {
     height: 100%;
 }
 
-.tabs::-webkit-scrollbar {
-    height: 3px;
-}
-
-.tabs::-webkit-scrollbar-thumb {
-    background: #555;
-    border-radius: 5px;
-}
-
 .tab {
     height: 38px;
     min-width: 150px;
@@ -78,7 +67,6 @@ body {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    user-select: none;
     color: #aaa;
     border: 1px solid #333;
     border-bottom: none;
@@ -117,7 +105,6 @@ body {
 .new-tab {
     width: 38px;
     height: 36px;
-    margin-bottom: 1px;
     border: none;
     background: transparent;
     color: white;
@@ -161,10 +148,6 @@ body {
     color: white;
 }
 
-.toolbar-button:active {
-    transform: scale(.94);
-}
-
 .address-container {
     flex: 1;
     height: 40px;
@@ -174,17 +157,6 @@ body {
     display: flex;
     align-items: center;
     padding: 0 15px;
-    transition: .2s;
-}
-
-.address-container:focus-within {
-    border-color: #777;
-    background: #151515;
-}
-
-.address-icon {
-    margin-right: 8px;
-    color: #aaa;
 }
 
 .address-bar {
@@ -219,7 +191,7 @@ body {
 }
 
 /* =========================
-   HOME PAGE
+   HOME
 ========================= */
 
 .home-page {
@@ -241,7 +213,6 @@ body {
     font-size: 70px;
     font-weight: 800;
     letter-spacing: -5px;
-    margin-bottom: 8px;
 }
 
 .logo span {
@@ -251,7 +222,6 @@ body {
 .subtitle {
     color: #999;
     margin-bottom: 35px;
-    font-size: 15px;
 }
 
 .search-form {
@@ -263,7 +233,6 @@ body {
     border: 1px solid #444;
     border-radius: 30px;
     overflow: hidden;
-    box-shadow: 0 10px 35px rgba(0,0,0,.35);
 }
 
 .search-input {
@@ -283,16 +252,6 @@ body {
     color: white;
     font-weight: bold;
     cursor: pointer;
-}
-
-.search-button:hover {
-    background: #f04440;
-}
-
-.safe-search {
-    margin-top: 14px;
-    color: #999;
-    font-size: 13px;
 }
 
 .quick-title {
@@ -324,7 +283,6 @@ body {
 .quick-link:hover {
     transform: translateY(-2px);
     background: #2b2b2b;
-    border-color: #555;
 }
 
 .quick-icon {
@@ -333,150 +291,232 @@ body {
     margin-bottom: 8px;
 }
 
-.quick-name {
-    font-size: 13px;
-}
-
 /* =========================
-   WEBSITE FRAME
+   CHOX VIDEO
 ========================= */
 
-.site-frame {
+.chox-video-page {
     width: 100%;
     height: 100%;
-    border: none;
-    background: white;
+    overflow-y: auto;
+    background: #101010;
+    color: white;
 }
 
-/* =========================
-   BLOCKED MESSAGE
-========================= */
-
-.blocked-page {
-    width: 100%;
-    height: 100%;
+.cv-layout {
+    min-height: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 30px;
-    background: #111;
 }
 
-.blocked-box {
-    max-width: 600px;
+.cv-sidebar {
+    width: 220px;
+    flex-shrink: 0;
+    background: #191919;
+    border-right: 1px solid #333;
+    padding: 20px 12px;
+}
+
+.cv-brand {
+    font-size: 24px;
+    font-weight: 800;
+    padding: 10px 12px 25px;
+}
+
+.cv-brand span {
+    color: #e53935;
+}
+
+.cv-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cv-nav button {
+    border: none;
+    background: transparent;
+    color: #ccc;
+    text-align: left;
+    padding: 13px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.cv-nav button:hover,
+.cv-nav button.active {
+    background: #303030;
+    color: white;
+}
+
+.cv-main {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+
+.cv-header {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+}
+
+.cv-search {
+    flex: 1;
+    height: 46px;
     background: #202020;
     border: 1px solid #3b3b3b;
-    border-radius: 20px;
-    padding: 35px;
+    border-radius: 23px;
+    padding: 0 18px;
+    color: white;
+    outline: none;
 }
 
-.blocked-box h2 {
-    margin-top: 0;
-}
-
-.blocked-box p {
-    color: #aaa;
-    line-height: 1.6;
-}
-
-.blocked-button {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 12px 20px;
-    border-radius: 10px;
+.cv-search-button {
+    width: 90px;
+    border: none;
+    border-radius: 23px;
     background: #e53935;
     color: white;
-    text-decoration: none;
-    border: none;
     cursor: pointer;
+    font-weight: bold;
 }
 
-/* =========================
-   MENU
-========================= */
+.cv-search-button:hover {
+    background: #f04440;
+}
 
-.menu {
-    position: absolute;
-    right: 12px;
-    top: 55px;
-    width: 180px;
+.cv-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.cv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.cv-card {
+    background: #1b1b1b;
+    border: 1px solid #2f2f2f;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.cv-card:hover {
+    transform: translateY(-3px);
+    border-color: #555;
+}
+
+.cv-thumbnail {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
     background: #252525;
-    border: 1px solid #444;
-    border-radius: 12px;
-    padding: 6px;
-    box-shadow: 0 15px 40px rgba(0,0,0,.5);
-    display: none;
-    z-index: 1000;
-}
-
-.menu.show {
     display: block;
 }
 
-.menu button {
+.cv-card-body {
+    padding: 13px;
+}
+
+.cv-card-title {
+    font-weight: bold;
+    line-height: 1.4;
+    margin-bottom: 7px;
+}
+
+.cv-card-url {
+    color: #888;
+    font-size: 12px;
+}
+
+.cv-empty {
+    padding: 60px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.cv-player {
+    max-width: 1000px;
+    margin: auto;
+}
+
+.cv-player iframe {
     width: 100%;
+    aspect-ratio: 16 / 9;
     border: none;
-    background: transparent;
+    border-radius: 12px;
+    background: black;
+}
+
+.cv-player-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.cv-player-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.cv-action {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 9px;
+    background: #292929;
     color: white;
-    text-align: left;
-    padding: 11px;
-    border-radius: 8px;
     cursor: pointer;
 }
 
-.menu button:hover {
-    background: #383838;
+.cv-action:hover {
+    background: #3a3a3a;
 }
 
-/* =========================
-   MOBILE
-========================= */
+@media (max-width: 700px) {
 
-@media (max-width: 600px) {
-
-    .tab {
-        min-width: 125px;
+    .cv-sidebar {
+        width: 65px;
+        padding: 10px 6px;
     }
 
-    .toolbar {
-        gap: 3px;
-        padding: 7px;
+    .cv-brand {
+        font-size: 0;
+        text-align: center;
     }
 
-    .toolbar-button {
-        width: 34px;
-        height: 34px;
+    .cv-brand::after {
+        content: "C";
+        font-size: 24px;
+        color: #e53935;
     }
 
-    .logo {
-        font-size: 55px;
+    .cv-nav button {
+        text-align: center;
+        font-size: 0;
     }
 
-    .home-page {
-        padding-top: 35px;
+    .cv-nav button::first-letter {
+        font-size: 18px;
+    }
+
+    .cv-main {
+        padding: 15px;
     }
 }
 </style>
-
-<!--
-    IMPORTANT:
-    chox-video.js is intentionally NOT loaded here.
-    It is loaded at the very bottom of the document after
-    the main Chox browser functions have been created.
--->
-
-<link rel="stylesheet" href="chox-video.css">
-
 </head>
 
 <body>
 
 <div class="browser">
 
-    <!-- =========================
-         TAB BAR
-    ========================== -->
+    <!-- TABS -->
 
     <div class="tab-bar">
 
@@ -491,9 +531,8 @@ body {
 
     </div>
 
-    <!-- =========================
-         TOOLBAR
-    ========================== -->
+
+    <!-- TOOLBAR -->
 
     <div class="toolbar">
 
@@ -527,8 +566,6 @@ body {
 
         <div class="address-container">
 
-            <span class="address-icon">🔒</span>
-
             <input
                 id="addressBar"
                 class="address-bar"
@@ -540,50 +577,14 @@ body {
 
         </div>
 
-        <button
-            class="toolbar-button"
-            onclick="bookmarkPage()"
-            title="Bookmark">
-            ☆
-        </button>
-
-        <button
-            class="toolbar-button"
-            onclick="toggleMenu()"
-            title="Menu">
-            ⋮
-        </button>
-
     </div>
 
-    <!-- =========================
-         CONTENT
-    ========================== -->
 
-    <div class="content" id="content"></div>
+    <!-- CONTENT -->
 
-    <!-- =========================
-         MENU
-    ========================== -->
-
-    <div class="menu" id="menu">
-
-        <button onclick="createNewTab(); closeMenu();">
-            ➕ New Tab
-        </button>
-
-        <button onclick="closeActiveTab(); closeMenu();">
-            ✕ Close Tab
-        </button>
-
-        <button onclick="goHome(); closeMenu();">
-            ⌂ Home
-        </button>
-
-        <button onclick="bookmarkPage(); closeMenu();">
-            ☆ Bookmark
-        </button>
-
+    <div
+        class="content"
+        id="content">
     </div>
 
 </div>
@@ -592,7 +593,7 @@ body {
 <script>
 
 /* =========================================================
-   CHOX INTERNAL TAB SYSTEM
+   CHOX BROWSER
 ========================================================= */
 
 let tabs = [];
@@ -608,20 +609,29 @@ function createNewTab() {
 
     tabCounter++;
 
-    const id = "tab-" + tabCounter;
+    const id =
+        "tab-" + tabCounter;
 
     const tab = {
+
         id: id,
+
         title: "New Tab",
+
         url: "",
+
         type: "home",
+
         history: [],
+
         historyIndex: -1
+
     };
 
     tabs.push(tab);
 
     createTabButton(tab);
+
     createTabPage(tab);
 
     switchTab(id);
@@ -629,35 +639,44 @@ function createNewTab() {
 
 
 /* =========================================================
-   CREATE TAB BUTTON
+   TAB BUTTON
 ========================================================= */
 
 function createTabButton(tab) {
 
-    const tabsContainer =
+    const container =
         document.getElementById("tabs");
 
     const button =
         document.createElement("div");
 
     button.className = "tab";
+
     button.dataset.id = tab.id;
 
     button.innerHTML = `
-        <span class="tab-title">${escapeHTML(tab.title)}</span>
-        <button class="tab-close" title="Close Tab">×</button>
+        <span class="tab-title">
+            ${escapeHTML(tab.title)}
+        </span>
+
+        <button
+            class="tab-close"
+            title="Close Tab">
+            ×
+        </button>
     `;
 
     button.addEventListener(
         "click",
-        function () {
+        function() {
 
             switchTab(tab.id);
 
         }
     );
 
-    button.querySelector(".tab-close")
+    button
+        .querySelector(".tab-close")
         .addEventListener(
             "click",
             function(event) {
@@ -669,7 +688,7 @@ function createTabButton(tab) {
             }
         );
 
-    tabsContainer.appendChild(button);
+    container.appendChild(button);
 }
 
 
@@ -686,7 +705,9 @@ function createTabPage(tab) {
         document.createElement("div");
 
     page.className = "tab-page";
-    page.id = "page-" + tab.id;
+
+    page.id =
+        "page-" + tab.id;
 
     content.appendChild(page);
 
@@ -695,7 +716,7 @@ function createTabPage(tab) {
 
 
 /* =========================================================
-   RENDER HOME
+   HOME
 ========================================================= */
 
 function renderHome(tab) {
@@ -723,7 +744,7 @@ function renderHome(tab) {
 
                 <form
                     class="search-form"
-                    onsubmit="homeSearch(event, '${tab.id}')"
+                    id="search-${tab.id}"
                 >
 
                     <input
@@ -735,16 +756,12 @@ function renderHome(tab) {
                     >
 
                     <button
-                        type="submit"
-                        class="search-button">
+                        class="search-button"
+                        type="submit">
                         Search
                     </button>
 
                 </form>
-
-                <div class="safe-search">
-                    🛡 SafeSearch enabled
-                </div>
 
                 <div class="quick-title">
                     Quick Links
@@ -752,81 +769,569 @@ function renderHome(tab) {
 
                 <div class="quick-links">
 
+                    <button
+                        class="quick-link"
+                        onclick="openChoxVideoPage('${tab.id}')">
+
+                        <span class="quick-icon">
+                            ▶
+                        </span>
+
+                        <span>
+                            Chox Video
+                        </span>
+
+                    </button>
+
                     <a
                         class="quick-link"
                         href="https://www.youtube.com/"
-                        onclick="openQuickLink(event, '${tab.id}', this.href, 'YouTube')"
-                    >
-                        <span class="quick-icon">▶</span>
-                        <span class="quick-name">YouTube</span>
-                    </a>
+                        target="_blank">
 
-                    <!-- =========================
-                         CHOX VIDEO
-                    ========================== -->
+                        <span class="quick-icon">
+                            ▶
+                        </span>
 
-                    <a
-                        class="quick-link chox-video-link"
-                        href="chox://video"
-                        onclick="
-                            event.preventDefault();
-                            if (typeof window.openChoxVideo === 'function') {
-                                window.openChoxVideo('${tab.id}');
-                            } else {
-                                console.error('Chox Video has not loaded yet.');
-                            }
-                        "
-                    >
-                        <span class="quick-icon">▶</span>
-                        <span class="quick-name">Chox Video</span>
+                        <span>
+                            YouTube
+                        </span>
+
                     </a>
 
                     <a
                         class="quick-link"
                         href="https://www.google.com/"
-                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Google')"
-                    >
-                        <span class="quick-icon">G</span>
-                        <span class="quick-name">Google</span>
-                    </a>
+                        target="_blank">
 
-                    <a
-                        class="quick-link"
-                        href="https://www.facebook.com/"
-                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Facebook')"
-                    >
-                        <span class="quick-icon">f</span>
-                        <span class="quick-name">Facebook</span>
-                    </a>
+                        <span class="quick-icon">
+                            G
+                        </span>
 
-                    <a
-                        class="quick-link"
-                        href="https://www.instagram.com/"
-                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Instagram')"
-                    >
-                        <span class="quick-icon">◎</span>
-                        <span class="quick-name">Instagram</span>
+                        <span>
+                            Google
+                        </span>
+
                     </a>
 
                     <a
                         class="quick-link"
                         href="https://github.com/"
-                        onclick="openQuickLink(event, '${tab.id}', this.href, 'GitHub')"
-                    >
-                        <span class="quick-icon">◉</span>
-                        <span class="quick-name">GitHub</span>
+                        target="_blank">
+
+                        <span class="quick-icon">
+                            ◉
+                        </span>
+
+                        <span>
+                            GitHub
+                        </span>
+
                     </a>
 
                     <a
                         class="quick-link"
                         href="https://www.reddit.com/"
-                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Reddit')"
-                    >
-                        <span class="quick-icon">●</span>
-                        <span class="quick-name">Reddit</span>
+                        target="_blank">
+
+                        <span class="quick-icon">
+                            ●
+                        </span>
+
+                        <span>
+                            Reddit
+                        </span>
+
                     </a>
 
                 </div>
+
+            </div>
+
+        </div>
+    `;
+
+
+    document
+        .getElementById(
+            "search-" + tab.id
+        )
+        .addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                const input =
+                    document.getElementById(
+                        "home-search-" + tab.id
+                    );
+
+                const query =
+                    input.value.trim();
+
+                if (!query) return;
+
+                performSearch(
+                    tab.id,
+                    query
+                );
+
+            }
+        );
+}
+
+
+/* =========================================================
+   CHOX VIDEO
+========================================================= */
+
+function openChoxVideoPage(tabId) {
+
+    const tab =
+        tabs.find(
+            t => t.id === tabId
+        );
+
+    if (!tab) return;
+
+    tab.type = "chox-video";
+
+    tab.url = "chox://video";
+
+    tab.title = "Chox Video";
+
+    const page =
+        document.getElementById(
+            "page-" + tab.id
+        );
+
+    if (!page) return;
+
+    page.innerHTML = `
+
+        <div class="chox-video-page">
+
+            <div class="cv-layout">
+
+                <aside class="cv-sidebar">
+
+                    <div class="cv-brand">
+                        Chox<span> Video</span>
+                    </div>
+
+                    <nav class="cv-nav">
+
+                        <button
+                            class="active"
+                            onclick="cvShowHome('${tab.id}')">
+                            🏠 Home
+                        </button>
+
+                        <button
+                            onclick="cvSearchVideos('${tab.id}')">
+                            🔍 Search
+                        </button>
+
+                        <button
+                            onclick="cvShowHistory('${tab.id}')">
+                            🕘 History
+                        </button>
+
+                        <button
+                            onclick="cvShowFavorites('${tab.id}')">
+                            ⭐ Favorites
+                        </button>
+
+                    </nav>
+
+                </aside>
+
+
+                <main class="cv-main">
+
+                    <div class="cv-header">
+
+                        <input
+                            id="cv-search-${tab.id}"
+                            class="cv-search"
+                            type="text"
+                            placeholder="Search videos..."
+                            autocomplete="off"
+                        >
+
+                        <button
+                            class="cv-search-button"
+                            onclick="cvSearchVideos('${tab.id}')">
+                            Search
+                        </button>
+
+                    </div>
+
+                    <div id="cv-content-${tab.id}">
+
+                        <div class="cv-title">
+                            Chox Video
+                        </div>
+
+                        <div class="cv-empty">
+                            Search for videos to get started.
+                        </div>
+
+                    </div>
+
+                </main>
+
+            </div>
+
+        </div>
+    `;
+
+    updateTabButton(tab);
+
+    updateAddressBar();
+
+    const input =
+        document.getElementById(
+            "cv-search-" + tab.id
+        );
+
+    if (input) {
+
+        input.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Enter") {
+
+                    cvSearchVideos(tab.id);
+
+                }
+
+            }
+        );
+
+    }
+}
+
+
+/* =========================================================
+   CHOX VIDEO HOME
+========================================================= */
+
+function cvShowHome(tabId) {
+
+    const container =
+        document.getElementById(
+            "cv-content-" + tabId
+        );
+
+    if (!container) return;
+
+    container.innerHTML = `
+
+        <div class="cv-title">
+            Chox Video
+        </div>
+
+        <div class="cv-empty">
+            Search for videos to get started.
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   CHOX VIDEO SEARCH
+========================================================= */
+
+async function cvSearchVideos(tabId) {
+
+    const input =
+        document.getElementById(
+            "cv-search-" + tabId
+        );
+
+    const container =
+        document.getElementById(
+            "cv-content-" + tabId
+        );
+
+    if (!input || !container) return;
+
+    const query =
+        input.value.trim();
+
+    if (!query) return;
+
+    container.innerHTML = `
+
+        <div class="cv-title">
+            Searching...
+        </div>
+    `;
+
+    /*
+       Use the existing Chox search API when available.
+    */
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/search?q=" +
+                encodeURIComponent(
+                    query + " site:youtube.com/watch"
+                )
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Search request failed"
+            );
+
+        }
+
+        const data =
+            await response.json();
+
+        const results =
+            data.results ||
+            data.web ||
+            [];
+
+        renderChoxVideoResults(
+            tabId,
+            results
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Chox Video search error:",
+            error
+        );
+
+        container.innerHTML = `
+
+            <div class="cv-title">
+                Chox Video
+            </div>
+
+            <div class="cv-empty">
+                Search is currently unavailable.
+                <br><br>
+                Make sure your Chox server/API is running.
+            </div>
+        `;
+    }
+}
+
+
+/* =========================================================
+   RENDER VIDEO RESULTS
+========================================================= */
+
+function renderChoxVideoResults(
+    tabId,
+    results
+) {
+
+    const container =
+        document.getElementById(
+            "cv-content-" + tabId
+        );
+
+    if (!container) return;
+
+    if (
+        !Array.isArray(results) ||
+        results.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="cv-title">
+                No videos found
+            </div>
+
+            <div class="cv-empty">
+                Try a different search.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const videoResults =
+        results.filter(
+            item =>
+                item.url &&
+                (
+                    item.url.includes(
+                        "youtube.com/watch"
+                    ) ||
+                    item.url.includes(
+                        "youtu.be/"
+                    )
+                )
+        );
+
+
+    if (videoResults.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="cv-title">
+                No videos found
+            </div>
+
+            <div class="cv-empty">
+                No YouTube videos were returned.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="cv-title">
+            Video Results
+        </div>
+
+        <div class="cv-grid">
+
+            ${videoResults
+                .map(
+                    (item, index) => {
+
+                        const videoId =
+                            getYouTubeId(
+                                item.url
+                            );
+
+                        const thumbnail =
+                            videoId
+                                ? "https://i.ytimg.com/vi/" +
+                                  videoId +
+                                  "/hqdefault.jpg"
+                                : "";
+
+                        return `
+
+                            <div
+                                class="cv-card"
+                                onclick="cvWatchVideo(
+                                    '${tabId}',
+                                    '${escapeAttribute(item.url)}',
+                                    '${escapeAttribute(item.title || "Video")}'
+                                )"
+                            >
+
+                                ${
+                                    thumbnail
+                                    ? `
+                                        <img
+                                            class="cv-thumbnail"
+                                            src="${thumbnail}"
+                                            alt=""
+                                        >
+                                      `
+                                    : `
+                                        <div class="cv-thumbnail"></div>
+                                      `
+                                }
+
+                                <div class="cv-card-body">
+
+                                    <div class="cv-card-title">
+                                        ${escapeHTML(
+                                            item.title ||
+                                            "Video"
+                                        )}
+                                    </div>
+
+                                    <div class="cv-card-url">
+                                        YouTube
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("")}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   WATCH VIDEO
+========================================================= */
+
+function cvWatchVideo(
+    tabId,
+    url,
+    title
+) {
+
+    const container =
+        document.getElementById(
+            "cv-content-" + tabId
+        );
+
+    if (!container) return;
+
+    const videoId =
+        getYouTubeId(url);
+
+    if (!videoId) {
+
+        container.innerHTML = `
+
+            <div class="cv-empty">
+                This video could not be opened.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="cv-player">
+
+            <iframe
+                src="https://www.youtube-nocookie.com/embed/${videoId}"
+                title="${escapeAttribute(title)}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen>
+            </iframe>
+
+            <div class="cv-player-title">
+                ${escapeHTML(title)}
+            </div>
+
+            <div class="cv-player-buttons">
+
+                <button
+                    class="cv-action"
+                    onclick="cvShowHome('${tabId}')">
+                    ← Back
+                </button>
+
+                <button
+                    class="cv-action"
+                    onclick="cvSaveFavorite('${escapeAttribute(url)}', '${escapeAttribute(title)}')">
+                    ⭐ Favorite
+                </button>
 
             </div>
 
@@ -836,26 +1341,412 @@ function renderHome(tab) {
 
 
 /* =========================================================
-   HOME SEARCH
+   VIDEO ID
 ========================================================= */
 
-function homeSearch(event, tabId) {
+function getYouTubeId(url) {
 
-    event.preventDefault();
+    try {
+
+        const parsed =
+            new URL(url);
+
+        if (
+            parsed.hostname.includes(
+                "youtu.be"
+            )
+        ) {
+
+            return parsed.pathname
+                .replace("/", "")
+                .split("/")[0];
+
+        }
+
+        if (
+            parsed.hostname.includes(
+                "youtube.com"
+            )
+        ) {
+
+            return parsed.searchParams.get(
+                "v"
+            );
+
+        }
+
+    } catch {
+
+        return null;
+
+    }
+
+    return null;
+}
+
+
+/* =========================================================
+   FAVORITES
+========================================================= */
+
+function cvSaveFavorite(
+    url,
+    title
+) {
+
+    let favorites =
+        JSON.parse(
+            localStorage.getItem(
+                "choxVideoFavorites"
+            ) || "[]"
+        );
+
+    const exists =
+        favorites.some(
+            item =>
+                item.url === url
+        );
+
+    if (!exists) {
+
+        favorites.push({
+            url: url,
+            title: title
+        });
+
+        localStorage.setItem(
+            "choxVideoFavorites",
+            JSON.stringify(favorites)
+        );
+
+        alert(
+            "⭐ Added to Favorites"
+        );
+
+    } else {
+
+        alert(
+            "⭐ Already in Favorites"
+        );
+
+    }
+}
+
+
+function cvShowFavorites(tabId) {
+
+    const container =
+        document.getElementById(
+            "cv-content-" + tabId
+        );
+
+    if (!container) return;
+
+    const favorites =
+        JSON.parse(
+            localStorage.getItem(
+                "choxVideoFavorites"
+            ) || "[]"
+        );
+
+    if (favorites.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="cv-title">
+                Favorites
+            </div>
+
+            <div class="cv-empty">
+                You don't have any favorites yet.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="cv-title">
+            Favorites
+        </div>
+
+        <div class="cv-grid">
+
+            ${favorites
+                .map(
+                    item => {
+
+                        const id =
+                            getYouTubeId(
+                                item.url
+                            );
+
+                        const thumbnail =
+                            id
+                            ? "https://i.ytimg.com/vi/" +
+                              id +
+                              "/hqdefault.jpg"
+                            : "";
+
+                        return `
+
+                            <div
+                                class="cv-card"
+                                onclick="cvWatchVideo(
+                                    '${tabId}',
+                                    '${escapeAttribute(item.url)}',
+                                    '${escapeAttribute(item.title)}'
+                                )"
+                            >
+
+                                ${
+                                    thumbnail
+                                    ? `
+                                        <img
+                                            class="cv-thumbnail"
+                                            src="${thumbnail}"
+                                            alt=""
+                                        >
+                                      `
+                                    : ""
+                                }
+
+                                <div class="cv-card-body">
+
+                                    <div class="cv-card-title">
+                                        ${escapeHTML(
+                                            item.title
+                                        )}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("")}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function cvShowHistory(tabId) {
+
+    const container =
+        document.getElementById(
+            "cv-content-" + tabId
+        );
+
+    if (!container) return;
+
+    const history =
+        JSON.parse(
+            localStorage.getItem(
+                "choxVideoHistory"
+            ) || "[]"
+        );
+
+    if (history.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="cv-title">
+                History
+            </div>
+
+            <div class="cv-empty">
+                Your video history is empty.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+
+        <div class="cv-title">
+            History
+        </div>
+
+        <div class="cv-grid">
+
+            ${history
+                .map(
+                    item => {
+
+                        const id =
+                            getYouTubeId(
+                                item.url
+                            );
+
+                        const thumbnail =
+                            id
+                            ? "https://i.ytimg.com/vi/" +
+                              id +
+                              "/hqdefault.jpg"
+                            : "";
+
+                        return `
+
+                            <div
+                                class="cv-card"
+                                onclick="cvWatchVideo(
+                                    '${tabId}',
+                                    '${escapeAttribute(item.url)}',
+                                    '${escapeAttribute(item.title)}'
+                                )"
+                            >
+
+                                ${
+                                    thumbnail
+                                    ? `
+                                        <img
+                                            class="cv-thumbnail"
+                                            src="${thumbnail}"
+                                            alt=""
+                                        >
+                                      `
+                                    : ""
+                                }
+
+                                <div class="cv-card-body">
+
+                                    <div class="cv-card-title">
+                                        ${escapeHTML(
+                                            item.title
+                                        )}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        `;
+                    }
+                )
+                .join("")}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
+
+function cvSearchFocus(tabId) {
 
     const input =
         document.getElementById(
-            "home-search-" + tabId
+            "cv-search-" + tabId
         );
 
-    if (!input) return;
+    if (input) {
 
-    const query =
+        input.focus();
+
+    }
+}
+
+
+/* =========================================================
+   ADDRESS BAR
+========================================================= */
+
+function addressKey(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        openAddress();
+
+    }
+}
+
+
+function openAddress() {
+
+    const input =
+        document.getElementById(
+            "addressBar"
+        );
+
+    const value =
         input.value.trim();
 
-    if (!query) return;
+    if (!value) return;
 
-    performSearch(tabId, query);
+    const tab =
+        tabs.find(
+            t => t.id === activeTabId
+        );
+
+    if (!tab) return;
+
+
+    if (
+        value === "chox://video"
+    ) {
+
+        openChoxVideoPage(
+            tab.id
+        );
+
+        return;
+
+    }
+
+
+    if (
+        value.startsWith(
+            "https://"
+        ) ||
+        value.startsWith(
+            "http://"
+        )
+    ) {
+
+        navigateTab(
+            tab,
+            value,
+            getDomainName(value)
+        );
+
+        return;
+
+    }
+
+
+    if (
+        value.includes(".") &&
+        !value.includes(" ")
+    ) {
+
+        navigateTab(
+            tab,
+            "https://" + value,
+            value
+        );
+
+        return;
+
+    }
+
+
+    performSearch(
+        tab.id,
+        value
+    );
 }
 
 
@@ -863,42 +1754,11 @@ function homeSearch(event, tabId) {
    SEARCH
 ========================================================= */
 
-function performSearch(tabId, query) {
-
-    const url =
-        "results.html?q=" +
-        encodeURIComponent(query);
-
-    const tab =
-        tabs.find(
-            t => t.id === tabId
-        );
-
-    if (!tab) return;
-
-    navigateTab(
-        tab,
-        url,
-        "Search - " + query
-    );
-
-    switchTab(tab.id);
-}
-
-
-/* =========================================================
-   QUICK LINK
-========================================================= */
-
-function openQuickLink(
-    event,
+function performSearch(
     tabId,
-    url,
-    title
+    query
 ) {
 
-    event.preventDefault();
-
     const tab =
         tabs.find(
             t => t.id === tabId
@@ -908,16 +1768,15 @@ function openQuickLink(
 
     navigateTab(
         tab,
-        url,
-        title
+        "results.html?q=" +
+        encodeURIComponent(query),
+        "Search - " + query
     );
-
-    switchTab(tab.id);
 }
 
 
 /* =========================================================
-   NAVIGATE TAB
+   WEBSITE NAVIGATION
 ========================================================= */
 
 function navigateTab(
@@ -927,25 +1786,11 @@ function navigateTab(
 ) {
 
     tab.type = "site";
+
     tab.url = url;
-    tab.title = title || url;
 
-    if (
-        tab.historyIndex <
-        tab.history.length - 1
-    ) {
-
-        tab.history =
-            tab.history.slice(
-                0,
-                tab.historyIndex + 1
-            );
-    }
-
-    tab.history.push(url);
-
-    tab.historyIndex =
-        tab.history.length - 1;
+    tab.title =
+        title || url;
 
     const page =
         document.getElementById(
@@ -957,31 +1802,21 @@ function navigateTab(
     page.innerHTML = "";
 
     const iframe =
-        document.createElement("iframe");
+        document.createElement(
+            "iframe"
+        );
 
-    iframe.className = "site-frame";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.border = "none";
 
     iframe.src = url;
-
-    iframe.setAttribute(
-        "allow",
-        "fullscreen; autoplay; clipboard-read; clipboard-write"
-    );
-
-    iframe.setAttribute(
-        "sandbox",
-        "allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
-    );
 
     page.appendChild(iframe);
 
     updateTabButton(tab);
 
-    if (activeTabId === tab.id) {
-
-        updateAddressBar();
-
-    }
+    updateAddressBar();
 }
 
 
@@ -1032,7 +1867,9 @@ function switchTab(id) {
 
     if (page) {
 
-        page.classList.add("active");
+        page.classList.add(
+            "active"
+        );
 
     }
 
@@ -1041,7 +1878,7 @@ function switchTab(id) {
 
 
 /* =========================================================
-   UPDATE TAB BUTTON
+   TAB UPDATE
 ========================================================= */
 
 function updateTabButton(tab) {
@@ -1061,7 +1898,7 @@ function updateTabButton(tab) {
     if (title) {
 
         title.textContent =
-            tab.title || "New Tab";
+            tab.title;
 
     }
 }
@@ -1083,7 +1920,10 @@ function closeTab(id) {
     const wasActive =
         activeTabId === id;
 
-    tabs.splice(index, 1);
+    tabs.splice(
+        index,
+        1
+    );
 
     const button =
         document.querySelector(
@@ -1117,31 +1957,16 @@ function closeTab(id) {
 
     if (wasActive) {
 
-        const newIndex =
-            Math.max(
-                0,
-                Math.min(
-                    index,
-                    tabs.length - 1
-                )
-            );
-
         switchTab(
-            tabs[newIndex].id
+            tabs[
+                Math.max(
+                    0,
+                    index - 1
+                )
+            ].id
         );
+
     }
-}
-
-
-/* =========================================================
-   CLOSE ACTIVE TAB
-========================================================= */
-
-function closeActiveTab() {
-
-    if (!activeTabId) return;
-
-    closeTab(activeTabId);
 }
 
 
@@ -1159,21 +1984,15 @@ function goHome() {
     if (!tab) return;
 
     tab.type = "home";
+
     tab.url = "";
+
     tab.title = "New Tab";
 
-    const page =
-        document.getElementById(
-            "page-" + tab.id
-        );
-
-    if (page) {
-
-        renderHome(tab);
-
-    }
+    renderHome(tab);
 
     updateTabButton(tab);
+
     updateAddressBar();
 }
 
@@ -1184,32 +2003,11 @@ function goHome() {
 
 function goBack() {
 
-    const tab =
-        tabs.find(
-            t => t.id === activeTabId
-        );
+    if (window.history.length > 1) {
 
-    if (!tab) return;
-
-    if (tab.historyIndex <= 0) {
-
-        return;
+        window.history.back();
 
     }
-
-    tab.historyIndex--;
-
-    const previous =
-        tab.history[
-            tab.historyIndex
-        ];
-
-    if (!previous) return;
-
-    loadHistoryEntry(
-        tab,
-        previous
-    );
 }
 
 
@@ -1219,78 +2017,8 @@ function goBack() {
 
 function goForward() {
 
-    const tab =
-        tabs.find(
-            t => t.id === activeTabId
-        );
+    window.history.forward();
 
-    if (!tab) return;
-
-    if (
-        tab.historyIndex >=
-        tab.history.length - 1
-    ) {
-
-        return;
-
-    }
-
-    tab.historyIndex++;
-
-    const next =
-        tab.history[
-            tab.historyIndex
-        ];
-
-    if (!next) return;
-
-    loadHistoryEntry(
-        tab,
-        next
-    );
-}
-
-
-/* =========================================================
-   LOAD HISTORY
-========================================================= */
-
-function loadHistoryEntry(
-    tab,
-    url
-) {
-
-    tab.type = "site";
-    tab.url = url;
-
-    const page =
-        document.getElementById(
-            "page-" + tab.id
-        );
-
-    if (!page) return;
-
-    page.innerHTML = "";
-
-    const iframe =
-        document.createElement("iframe");
-
-    iframe.className = "site-frame";
-    iframe.src = url;
-
-    iframe.setAttribute(
-        "allow",
-        "fullscreen; autoplay; clipboard-read; clipboard-write"
-    );
-
-    iframe.setAttribute(
-        "sandbox",
-        "allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
-    );
-
-    page.appendChild(iframe);
-
-    updateAddressBar();
 }
 
 
@@ -1307,29 +2035,23 @@ function reloadPage() {
 
     if (!tab) return;
 
-    /*
-       Chox Video is an internal app,
-       so re-render it instead of trying
-       to reload an iframe.
-    */
-
-    if (tab.type === "chox-video") {
-
-        if (
-            typeof window.renderChoxVideo ===
-            "function"
-        ) {
-
-            window.renderChoxVideo(tab);
-
-        }
-
-        return;
-    }
-
-    if (tab.type === "home") {
+    if (
+        tab.type === "home"
+    ) {
 
         renderHome(tab);
+
+        return;
+
+    }
+
+    if (
+        tab.type === "chox-video"
+    ) {
+
+        openChoxVideoPage(
+            tab.id
+        );
 
         return;
 
@@ -1343,7 +2065,9 @@ function reloadPage() {
     if (!page) return;
 
     const iframe =
-        page.querySelector("iframe");
+        page.querySelector(
+            "iframe"
+        );
 
     if (iframe) {
 
@@ -1356,99 +2080,6 @@ function reloadPage() {
 
 /* =========================================================
    ADDRESS BAR
-========================================================= */
-
-function addressKey(event) {
-
-    if (event.key === "Enter") {
-
-        openAddress();
-
-    }
-}
-
-
-function openAddress() {
-
-    const input =
-        document.getElementById(
-            "addressBar"
-        );
-
-    const value =
-        input.value.trim();
-
-    if (!value) return;
-
-    /*
-       Allow the Chox Video internal URL.
-    */
-
-    if (
-        value === "chox://video" ||
-        value === "chox:video"
-    ) {
-
-        if (
-            typeof window.openChoxVideo ===
-            "function"
-        ) {
-
-            window.openChoxVideo(
-                activeTabId
-            );
-
-        }
-
-        return;
-    }
-
-    const tab =
-        tabs.find(
-            t => t.id === activeTabId
-        );
-
-    if (!tab) return;
-
-    if (
-        value.startsWith("http://") ||
-        value.startsWith("https://")
-    ) {
-
-        navigateTab(
-            tab,
-            value,
-            getDomainName(value)
-        );
-
-        return;
-
-    }
-
-    if (
-        value.includes(".") &&
-        !value.includes(" ")
-    ) {
-
-        navigateTab(
-            tab,
-            "https://" + value,
-            value
-        );
-
-        return;
-
-    }
-
-    performSearch(
-        tab.id,
-        value
-    );
-}
-
-
-/* =========================================================
-   UPDATE ADDRESS BAR
 ========================================================= */
 
 function updateAddressBar() {
@@ -1467,108 +2098,8 @@ function updateAddressBar() {
 
     if (!tab) return;
 
-    /*
-       Display the internal Chox Video URL.
-    */
-
-    if (
-        tab.type === "chox-video"
-    ) {
-
-        input.value =
-            "chox://video";
-
-        return;
-
-    }
-
     input.value =
         tab.url || "";
-}
-
-
-/* =========================================================
-   BOOKMARK
-========================================================= */
-
-function bookmarkPage() {
-
-    const tab =
-        tabs.find(
-            t => t.id === activeTabId
-        );
-
-    if (
-        !tab ||
-        !tab.url
-    ) {
-
-        alert(
-            "There is no page to bookmark."
-        );
-
-        return;
-
-    }
-
-    let bookmarks =
-        JSON.parse(
-            localStorage.getItem(
-                "choxBookmarks"
-            ) || "[]"
-        );
-
-    const exists =
-        bookmarks.some(
-            item =>
-                item.url === tab.url
-        );
-
-    if (!exists) {
-
-        bookmarks.push({
-            title: tab.title,
-            url: tab.url
-        });
-
-        localStorage.setItem(
-            "choxBookmarks",
-            JSON.stringify(bookmarks)
-        );
-
-        alert(
-            "⭐ Bookmark saved!"
-        );
-
-    } else {
-
-        alert(
-            "⭐ This page is already bookmarked."
-        );
-
-    }
-}
-
-
-/* =========================================================
-   MENU
-========================================================= */
-
-function toggleMenu() {
-
-    document
-        .getElementById("menu")
-        .classList.toggle("show");
-
-}
-
-
-function closeMenu() {
-
-    document
-        .getElementById("menu")
-        .classList.remove("show");
-
 }
 
 
@@ -1618,238 +2149,36 @@ function escapeHTML(text) {
             "'",
             "&#039;"
         );
+}
 
+
+function escapeAttribute(text) {
+
+    return String(text)
+        .replaceAll(
+            "\\",
+            "\\\\"
+        )
+        .replaceAll(
+            "'",
+            "\\'"
+        )
+        .replaceAll(
+            "\n",
+            "\\n"
+        )
+        .replaceAll(
+            "\r",
+            "\\r"
+        );
 }
 
 
 /* =========================================================
-   START CHOX
+   START
 ========================================================= */
 
 createNewTab();
-
-
-/* =========================================================
-   CLOSE MENU WHEN CLICKING OUTSIDE
-========================================================= */
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-        const menu =
-            document.getElementById(
-                "menu"
-            );
-
-        const menuButton =
-            event.target.closest(
-                '[title="Menu"]'
-            );
-
-        if (
-            menu &&
-            !menu.contains(event.target) &&
-            !menuButton
-        ) {
-
-            closeMenu();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   CHOX VIDEO COMPATIBILITY
-=========================================================
-
-   These wrappers make sure the functions from
-   chox-video.js are available to HTML onclick
-   handlers regardless of how that file is written.
-========================================================= */
-
-window.addEventListener(
-    "load",
-    function() {
-
-        /*
-           chox-video.js should already have loaded
-           because its script tag is placed below this
-           main script.
-        */
-
-        if (
-            typeof openChoxVideo ===
-            "function"
-        ) {
-
-            window.openChoxVideo =
-                openChoxVideo;
-
-        }
-
-        if (
-            typeof renderChoxVideo ===
-            "function"
-        ) {
-
-            window.renderChoxVideo =
-                renderChoxVideo;
-
-        }
-
-        if (
-            typeof cvHome ===
-            "function"
-        ) {
-
-            window.cvHome =
-                cvHome;
-
-        }
-
-        if (
-            typeof cvSearchFocus ===
-            "function"
-        ) {
-
-            window.cvSearchFocus =
-                cvSearchFocus;
-
-        }
-
-        if (
-            typeof cvSearch ===
-            "function"
-        ) {
-
-            window.cvSearch =
-                cvSearch;
-
-        }
-
-        if (
-            typeof cvRunSearch ===
-            "function"
-        ) {
-
-            window.cvRunSearch =
-                cvRunSearch;
-
-        }
-
-        if (
-            typeof cvRenderHome ===
-            "function"
-        ) {
-
-            window.cvRenderHome =
-                cvRenderHome;
-
-        }
-
-        if (
-            typeof cvWatch ===
-            "function"
-        ) {
-
-            window.cvWatch =
-                cvWatch;
-
-        }
-
-        if (
-            typeof cvFavorite ===
-            "function"
-        ) {
-
-            window.cvFavorite =
-                cvFavorite;
-
-        }
-
-        if (
-            typeof cvShowSaved ===
-            "function"
-        ) {
-
-            window.cvShowSaved =
-                cvShowSaved;
-
-        }
-
-        if (
-            typeof cvRenderSaved ===
-            "function"
-        ) {
-
-            window.cvRenderSaved =
-                cvRenderSaved;
-
-        }
-
-    }
-);
-
-</script>
-
-
-<!-- =====================================================
-     CHOX VIDEO SCRIPT
-     
-     IMPORTANT:
-     This MUST stay after the main browser script above.
-===================================================== -->
-
-<script src="chox-video.js"></script>
-
-
-<!-- =====================================================
-     CHOX VIDEO FUNCTION BRIDGE
-     
-     Make Chox Video functions globally accessible.
-===================================================== -->
-
-<script>
-
-window.addEventListener(
-    "load",
-    function() {
-
-        const choxFunctions = [
-            "openChoxVideo",
-            "renderChoxVideo",
-            "cvHome",
-            "cvSearchFocus",
-            "cvSearch",
-            "cvRunSearch",
-            "cvRenderHome",
-            "cvWatch",
-            "cvFavorite",
-            "cvShowSaved",
-            "cvRenderSaved"
-        ];
-
-        choxFunctions.forEach(
-            function(name) {
-
-                if (
-                    typeof window[name] ===
-                    "function"
-                ) {
-
-                    window[name] =
-                        window[name];
-
-                }
-
-            }
-        );
-
-    }
-);
 
 </script>
 
