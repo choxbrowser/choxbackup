@@ -1,192 +1,771 @@
-/* CHOX VIDEO
- * A Chox-branded video client shell inspired by privacy-focused desktop video clients.
- * It uses Chox's existing web-search endpoint and direct video embeds; it does not proxy
- * or bypass network controls.
- */
+/* =========================================================
+   CHOX VIDEO
+   Chox-branded video client
+   ========================================================= */
 
-const CHOX_VIDEO_KEY = "choxVideoState";
-let choxVideoState = loadChoxVideoState();
+(function () {
+    "use strict";
 
-function loadChoxVideoState() {
-    try {
-        return JSON.parse(localStorage.getItem(CHOX_VIDEO_KEY)) || {
-            history: [], favorites: [], subscriptions: []
-        };
-    } catch (_) {
-        return { history: [], favorites: [], subscriptions: [] };
+    const STORAGE_KEY = "choxVideoState";
+
+    let state = {
+        history: [],
+        favorites: [],
+        subscriptions: []
+    };
+
+    // ---------------------------------------------------------
+    // Storage
+    // ---------------------------------------------------------
+
+    function loadState() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+
+            if (saved) {
+                state = {
+                    ...state,
+                    ...JSON.parse(saved)
+                };
+            }
+        } catch (error) {
+            console.error("Chox Video storage error:", error);
+        }
     }
-}
 
-function saveChoxVideoState() {
-    localStorage.setItem(CHOX_VIDEO_KEY, JSON.stringify(choxVideoState));
-}
+    function saveState() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (error) {
+            console.error("Chox Video save error:", error);
+        }
+    }
 
-function openChoxVideo(tabId) {
-    const tab = tabs.find(t => t.id === tabId);
-    if (!tab) return;
-    tab.type = "chox-video";
-    tab.title = "Chox Video";
-    tab.url = "chox://video";
-    tab.history = tab.history || [];
-    tab.history.push(tab.url);
-    tab.historyIndex = tab.history.length - 1;
-    renderChoxVideo(tab);
-    updateTabButton(tab);
-    if (activeTabId === tab.id) updateAddressBar();
-}
+    loadState();
 
-function renderChoxVideo(tab, view = "home", payload = "") {
-    const page = document.getElementById("page-" + tab.id);
-    if (!page) return;
+    // ---------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------
 
-    page.innerHTML = `
-        <div class="chox-video-app">
-            <aside class="chox-video-sidebar">
-                <div class="chox-video-brand"><span>▶</span><b>Chox Video</b></div>
-                <button class="cv-nav active" onclick="cvHome('${tab.id}')">⌂ <span>Home</span></button>
-                <button class="cv-nav" onclick="cvSearchFocus('${tab.id}')">⌕ <span>Search</span></button>
-                <button class="cv-nav" onclick="cvShowSaved('${tab.id}','history')">◷ <span>History</span></button>
-                <button class="cv-nav" onclick="cvShowSaved('${tab.id}','favorites')">★ <span>Favorites</span></button>
-                <button class="cv-nav" onclick="cvShowSaved('${tab.id}','subscriptions')">♟ <span>Subscriptions</span></button>
-                <div class="cv-sidebar-note">Chox Video uses direct, supported video embeds and your existing Chox search service.</div>
-            </aside>
-            <section class="chox-video-main">
-                <div class="cv-topbar">
-                    <form class="cv-search" onsubmit="cvSearch(event, '${tab.id}')">
-                        <input id="cv-search-${tab.id}" placeholder="Search videos..." autocomplete="off">
-                        <button>Search</button>
-                    </form>
-                </div>
-                <div id="cv-content-${tab.id}" class="cv-content"></div>
-            </section>
-        </div>
-    `;
+    function escapeHTML(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
-    if (view === "watch") cvWatch(tab.id, payload);
-    else if (view === "results") cvRunSearch(tab.id, payload);
-    else if (view === "saved") cvRenderSaved(tab.id, payload);
-    else cvRenderHome(tab.id);
-}
+    function getYouTubeId(url) {
+        if (!url) return null;
 
-function cvHome(tabId) { renderChoxVideo(tabs.find(t => t.id === tabId), "home"); }
+        try {
+            const parsed = new URL(url);
 
-function cvSearchFocus(tabId) {
-    const input = document.getElementById("cv-search-" + tabId);
-    if (input) { input.focus(); input.select(); }
-}
+            if (parsed.hostname.includes("youtu.be")) {
+                return parsed.pathname.substring(1);
+            }
 
-function cvSearch(event, tabId) {
-    event.preventDefault();
-    const input = document.getElementById("cv-search-" + tabId);
-    const q = input?.value.trim();
-    if (q) cvRunSearch(tabId, q);
-}
+            if (
+                parsed.hostname.includes("youtube.com") ||
+                parsed.hostname.includes("youtube-nocookie.com")
+            ) {
+                return (
+                    parsed.searchParams.get("v") ||
+                    parsed.pathname.split("/").filter(Boolean).pop()
+                );
+            }
+        } catch (error) {
+            const match = url.match(
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/]+)/
+            );
 
-async function cvRunSearch(tabId, query) {
-    const content = document.getElementById("cv-content-" + tabId);
-    if (!content) return;
-    content.innerHTML = `<div class="cv-loading">Searching Chox Video...</div>`;
-    try {
-        const response = await fetch("/api/search?q=" + encodeURIComponent(query + " site:youtube.com/watch"));
-        if (!response.ok) throw new Error("Search failed");
-        const data = await response.json();
-        const items = (data.results || []).filter(r => /youtube\.com\/watch|youtu\.be\//i.test(r.url));
-        content.innerHTML = `
-            <div class="cv-heading"><h1>Video results</h1><p>${escapeHTML(query)}</p></div>
-            <div class="cv-grid">${items.length ? items.map(cvCard).join("") : `<div class="cv-empty">No compatible video results were returned.</div>`}</div>
+            return match ? match[1] : null;
+        }
+
+        return null;
+    }
+
+    function youtubeUrl(id) {
+        return `https://www.youtube.com/watch?v=${encodeURIComponent(id)}`;
+    }
+
+    function thumbnailUrl(id) {
+        return `https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`;
+    }
+
+    // ---------------------------------------------------------
+    // Main Chox Video launcher
+    // ---------------------------------------------------------
+
+    window.openChoxVideo = function (tabId) {
+        if (typeof window.tabs === "undefined") {
+            console.error("Chox tabs system was not found.");
+            return;
+        }
+
+        const tab = window.tabs.find(t => t.id === tabId);
+
+        if (!tab) {
+            console.error("Chox tab not found:", tabId);
+            return;
+        }
+
+        tab.type = "chox-video";
+        tab.url = "chox://video";
+        tab.title = "Chox Video";
+
+        if (typeof window.renderTabs === "function") {
+            window.renderTabs();
+        }
+
+        renderChoxVideo(tabId);
+    };
+
+    // ---------------------------------------------------------
+    // Render
+    // ---------------------------------------------------------
+
+    window.renderChoxVideo = function (tabId) {
+        const container = document.getElementById(`page-${tabId}`);
+
+        if (!container) {
+            console.error("Chox Video container not found.");
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="chox-video-app">
+
+                <aside class="chox-video-sidebar">
+
+                    <div class="cv-brand">
+                        <div class="cv-brand-icon">C</div>
+                        <span>Chox Video</span>
+                    </div>
+
+                    <button class="cv-nav active" onclick="cvHome('${tabId}')">
+                        <span>⌂</span>
+                        Home
+                    </button>
+
+                    <button class="cv-nav" onclick="cvSearchFocus('${tabId}')">
+                        <span>⌕</span>
+                        Search
+                    </button>
+
+                    <button class="cv-nav" onclick="cvShowSaved('${tabId}', 'history')">
+                        <span>◷</span>
+                        History
+                    </button>
+
+                    <button class="cv-nav" onclick="cvShowSaved('${tabId}', 'favorites')">
+                        <span>★</span>
+                        Favorites
+                    </button>
+
+                    <button class="cv-nav" onclick="cvShowSaved('${tabId}', 'subscriptions')">
+                        <span>♥</span>
+                        Subscriptions
+                    </button>
+
+                    <div class="cv-sidebar-bottom">
+                        <div class="cv-sidebar-label">
+                            Chox Video
+                        </div>
+
+                        <div class="cv-sidebar-small">
+                            Your videos. Your way.
+                        </div>
+                    </div>
+
+                </aside>
+
+                <main class="chox-video-main">
+
+                    <header class="cv-header">
+
+                        <button
+                            class="cv-mobile-menu"
+                            onclick="cvToggleSidebar('${tabId}')"
+                        >
+                            ☰
+                        </button>
+
+                        <form
+                            class="cv-search"
+                            onsubmit="cvRunSearch(event, '${tabId}')"
+                        >
+                            <input
+                                id="cv-search-${tabId}"
+                                type="text"
+                                placeholder="Search videos..."
+                                autocomplete="off"
+                            />
+
+                            <button type="submit">
+                                🔍
+                            </button>
+                        </form>
+
+                    </header>
+
+                    <section
+                        id="cv-content-${tabId}"
+                        class="cv-content"
+                    ></section>
+
+                </main>
+
+            </div>
         `;
-    } catch (error) {
-        content.innerHTML = `<div class="cv-empty"><h2>Couldn't load video search</h2><p>Check that the Chox server and search API are running.</p></div>`;
+
+        cvRenderHome(tabId);
+    };
+
+    // ---------------------------------------------------------
+    // Home
+    // ---------------------------------------------------------
+
+    window.cvHome = function (tabId) {
+        cvSetActiveNav(tabId, 0);
+        cvRenderHome(tabId);
+    };
+
+    window.cvRenderHome = function (tabId) {
+        const content = document.getElementById(`cv-content-${tabId}`);
+
+        if (!content) return;
+
+        content.innerHTML = `
+            <div class="cv-welcome">
+                <div class="cv-welcome-icon">
+                    ▶
+                </div>
+
+                <h1>Welcome to Chox Video</h1>
+
+                <p>
+                    Search and watch videos with the Chox interface.
+                </p>
+
+                <button
+                    class="cv-primary-button"
+                    onclick="cvSearchFocus('${tabId}')"
+                >
+                    Search videos
+                </button>
+            </div>
+
+            ${
+                state.history.length
+                    ? `
+                    <div class="cv-section">
+                        <div class="cv-section-title">
+                            Continue watching
+                        </div>
+
+                        <div class="cv-grid">
+                            ${state.history
+                                .slice(0, 8)
+                                .map(video => createVideoCard(video, tabId))
+                                .join("")}
+                        </div>
+                    </div>
+                    `
+                    : ""
+            }
+
+            ${
+                state.favorites.length
+                    ? `
+                    <div class="cv-section">
+                        <div class="cv-section-title">
+                            Favorites
+                        </div>
+
+                        <div class="cv-grid">
+                            ${state.favorites
+                                .slice(0, 8)
+                                .map(video => createVideoCard(video, tabId))
+                                .join("")}
+                        </div>
+                    </div>
+                    `
+                    : ""
+            }
+        `;
+    };
+
+    // ---------------------------------------------------------
+    // Search
+    // ---------------------------------------------------------
+
+    window.cvSearchFocus = function (tabId) {
+        const input = document.getElementById(`cv-search-${tabId}`);
+
+        if (input) {
+            input.focus();
+        }
+
+        cvSetActiveNav(tabId, 1);
+    };
+
+    window.cvSearch = async function (query, tabId) {
+        query = String(query || "").trim();
+
+        if (!query) {
+            cvRenderHome(tabId);
+            return;
+        }
+
+        const content = document.getElementById(`cv-content-${tabId}`);
+
+        if (!content) return;
+
+        content.innerHTML = `
+            <div class="cv-loading">
+                <div class="cv-spinner"></div>
+                <p>Searching Chox Video...</p>
+            </div>
+        `;
+
+        try {
+            const response = await fetch(
+                `/api/search?q=${encodeURIComponent(
+                    query + " site:youtube.com/watch"
+                )}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Search request failed.");
+            }
+
+            const data = await response.json();
+
+            const rawResults =
+                data.results ||
+                data.web ||
+                data.items ||
+                [];
+
+            const results = rawResults
+                .map(item => {
+                    const url =
+                        item.url ||
+                        item.link ||
+                        item.href ||
+                        "";
+
+                    const id = getYouTubeId(url);
+
+                    if (!id) return null;
+
+                    return {
+                        id,
+                        title:
+                            item.title ||
+                            item.name ||
+                            "Untitled video",
+                        description:
+                            item.description ||
+                            item.snippet ||
+                            "",
+                        url: youtubeUrl(id),
+                        thumbnail: thumbnailUrl(id)
+                    };
+                })
+                .filter(Boolean);
+
+            renderSearchResults(results, query, tabId);
+
+        } catch (error) {
+            console.error("Chox Video search error:", error);
+
+            content.innerHTML = `
+                <div class="cv-error">
+                    <div class="cv-error-icon">!</div>
+
+                    <h2>Search unavailable</h2>
+
+                    <p>
+                        Chox Video could not reach the search service.
+                    </p>
+
+                    <button
+                        class="cv-primary-button"
+                        onclick="cvSearch('${escapeHTML(query)}', '${tabId}')"
+                    >
+                        Try again
+                    </button>
+                </div>
+            `;
+        }
+    };
+
+    window.cvRunSearch = function (event, tabId) {
+        event.preventDefault();
+
+        const input = document.getElementById(`cv-search-${tabId}`);
+
+        if (!input) return;
+
+        cvSearch(input.value, tabId);
+    };
+
+    function renderSearchResults(results, query, tabId) {
+        const content = document.getElementById(`cv-content-${tabId}`);
+
+        if (!content) return;
+
+        if (!results.length) {
+            content.innerHTML = `
+                <div class="cv-empty">
+                    <div class="cv-empty-icon">⌕</div>
+
+                    <h2>No videos found</h2>
+
+                    <p>
+                        Try searching for something else.
+                    </p>
+                </div>
+            `;
+
+            return;
+        }
+
+        content.innerHTML = `
+            <div class="cv-page-heading">
+                <h1>Search results</h1>
+                <p>
+                    Results for
+                    <strong>${escapeHTML(query)}</strong>
+                </p>
+            </div>
+
+            <div class="cv-grid">
+                ${results
+                    .map(video => createVideoCard(video, tabId))
+                    .join("")}
+            </div>
+        `;
     }
-}
 
-function cvRenderHome(tabId) {
-    const content = document.getElementById("cv-content-" + tabId);
-    const recent = choxVideoState.history.slice(0, 6);
-    content.innerHTML = `
-        <div class="cv-hero">
-            <div><span class="cv-pill">CHOX VIDEO</span><h1>Your video space.</h1><p>A clean, Chox-branded video interface with local history and favorites.</p></div>
-            <button onclick="cvSearchFocus('${tabId}')">Start searching</button>
-        </div>
-        <div class="cv-heading"><h2>Quick start</h2></div>
-        <div class="cv-feature-row">
-            <button onclick="cvShowSaved('${tabId}','history')">◷<b>History</b><span>Continue watching</span></button>
-            <button onclick="cvShowSaved('${tabId}','favorites')">★<b>Favorites</b><span>Your saved videos</span></button>
-            <button onclick="cvShowSaved('${tabId}','subscriptions')">♟<b>Subscriptions</b><span>Local channel list</span></button>
-        </div>
-        ${recent.length ? `<div class="cv-heading"><h2>Recently watched</h2></div><div class="cv-grid">${recent.map(cvCard).join("")}</div>` : ""}
-    `;
-}
+    // ---------------------------------------------------------
+    // Video Cards
+    // ---------------------------------------------------------
 
-function cvCard(item) {
-    const url = item.url || "";
-    const title = item.title || "Video";
-    const thumb = item.thumbnail || youtubeThumb(url);
-    return `
-        <article class="cv-card" onclick="cvWatch(activeTabId, '${escapeJS(url)}')">
-            <div class="cv-thumb">${thumb ? `<img src="${escapeAttr(thumb)}" loading="lazy" alt="">` : "▶"}</div>
-            <div class="cv-card-body"><h3>${escapeHTML(title)}</h3><p>${escapeHTML(item.domain || "Video")}</p></div>
-            <button class="cv-fav" title="Save favorite" onclick="event.stopPropagation(); cvFavorite(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(item))}')))">★</button>
-        </article>
-    `;
-}
+    function createVideoCard(video, tabId) {
+        const safeId = escapeHTML(video.id);
+        const safeTitle = escapeHTML(video.title);
+        const safeDescription = escapeHTML(video.description);
 
-function cvWatch(tabId, url) {
-    const tab = tabs.find(t => t.id === tabId);
-    const content = document.getElementById("cv-content-" + tabId);
-    if (!tab || !content) return;
-    const id = extractYouTubeId(url);
-    if (!id) {
-        content.innerHTML = `<div class="cv-empty"><h2>Unsupported video link</h2><p>Open a supported video URL from search results.</p></div>`;
-        return;
+        return `
+            <article class="cv-card">
+
+                <button
+                    class="cv-thumbnail-button"
+                    onclick="cvWatch('${safeId}', '${tabId}')"
+                >
+                    <img
+                        class="cv-thumbnail"
+                        src="${thumbnailUrl(safeId)}"
+                        alt=""
+                        loading="lazy"
+                        onerror="this.style.display='none'"
+                    />
+
+                    <span class="cv-play">
+                        ▶
+                    </span>
+                </button>
+
+                <div class="cv-card-info">
+
+                    <button
+                        class="cv-card-title"
+                        onclick="cvWatch('${safeId}', '${tabId}')"
+                    >
+                        ${safeTitle}
+                    </button>
+
+                    ${
+                        safeDescription
+                            ? `
+                            <p class="cv-card-description">
+                                ${safeDescription}
+                            </p>
+                            `
+                            : ""
+                    }
+
+                    <div class="cv-card-actions">
+
+                        <button
+                            onclick="cvWatch('${safeId}', '${tabId}')"
+                        >
+                            ▶ Watch
+                        </button>
+
+                        <button
+                            onclick="cvFavorite('${safeId}')"
+                        >
+                            ★ Save
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+        `;
     }
-    const item = { url, title: "YouTube video", thumbnail: youtubeThumb(url), domain: "YouTube" };
-    choxVideoState.history = [item, ...choxVideoState.history.filter(x => x.url !== url)].slice(0, 50);
-    saveChoxVideoState();
-    content.innerHTML = `
-        <button class="cv-back" onclick="cvHome('${tabId}')">← Back to Chox Video</button>
-        <div class="cv-player-wrap">
-            <iframe class="cv-player" src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}" title="Chox Video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-        <div class="cv-watch-info"><div><span class="cv-pill">NOW PLAYING</span><h1>YouTube video</h1><p>Playback is provided by the supported video embed.</p></div><button onclick="cvFavorite(JSON.parse(decodeURIComponent('${encodeURIComponent(JSON.stringify(item))}')))" >★ Save</button></div>
-    `;
-    tab.title = "Chox Video";
-    updateTabButton(tab);
-}
 
-function cvFavorite(item) {
-    if (!item?.url) return;
-    const exists = choxVideoState.favorites.some(x => x.url === item.url);
-    if (exists) choxVideoState.favorites = choxVideoState.favorites.filter(x => x.url !== item.url);
-    else choxVideoState.favorites.unshift(item);
-    saveChoxVideoState();
-}
+    // ---------------------------------------------------------
+    // Watch
+    // ---------------------------------------------------------
 
-function cvShowSaved(tabId, kind) { renderChoxVideo(tabs.find(t => t.id === tabId), "saved", kind); }
+    window.cvWatch = function (videoId, tabId) {
+        if (!videoId) return;
 
-function cvRenderSaved(tabId, kind) {
-    const content = document.getElementById("cv-content-" + tabId);
-    let list = [];
-    let label = kind;
-    if (kind === "history") list = choxVideoState.history;
-    if (kind === "favorites") list = choxVideoState.favorites;
-    if (kind === "subscriptions") list = choxVideoState.subscriptions;
-    content.innerHTML = `<div class="cv-heading"><h1>${escapeHTML(label[0].toUpperCase()+label.slice(1))}</h1><p>Stored locally in this browser.</p></div><div class="cv-grid">${list.length ? list.map(cvCard).join("") : `<div class="cv-empty">Nothing here yet.</div>`}</div>`;
-}
+        const video = {
+            id: videoId,
+            title: "Chox Video",
+            description: "",
+            url: youtubeUrl(videoId),
+            thumbnail: thumbnailUrl(videoId),
+            watchedAt: Date.now()
+        };
 
-function extractYouTubeId(url) {
-    try {
-        const u = new URL(url);
-        if (u.hostname.includes("youtu.be")) return u.pathname.slice(1).split("/")[0];
-        if (u.hostname.includes("youtube.com")) return u.searchParams.get("v") || u.pathname.split("/embed/")[1]?.split("/")[0] || u.pathname.split("/shorts/")[1]?.split("/")[0];
-    } catch (_) {}
-    return null;
-}
+        state.history = [
+            video,
+            ...state.history.filter(item => item.id !== videoId)
+        ].slice(0, 100);
 
-function youtubeThumb(url) {
-    const id = extractYouTubeId(url);
-    return id ? `https://i.ytimg.com/vi/${encodeURIComponent(id)}/hqdefault.jpg` : "";
-}
+        saveState();
 
-function escapeJS(value) { return String(value).replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g,"\\n").replace(/\r/g,"\\r"); }
-function escapeAttr(value) { return String(value).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+        const content = document.getElementById(`cv-content-${tabId}`);
+
+        if (!content) return;
+
+        content.innerHTML = `
+            <div class="cv-player-page">
+
+                <button
+                    class="cv-back-button"
+                    onclick="cvHome('${tabId}')"
+                >
+                    ← Back
+                </button>
+
+                <div class="cv-player-wrapper">
+
+                    <iframe
+                        class="cv-player"
+                        src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(
+                            videoId
+                        )}"
+                        title="Chox Video Player"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowfullscreen
+                        referrerpolicy="strict-origin-when-cross-origin"
+                    ></iframe>
+
+                </div>
+
+                <div class="cv-player-info">
+
+                    <h1>Chox Video</h1>
+
+                    <div class="cv-player-actions">
+
+                        <button
+                            onclick="cvFavorite('${escapeHTML(videoId)}')"
+                        >
+                            ★ Add to Favorites
+                        </button>
+
+                        <button
+                            onclick="window.open('${youtubeUrl(
+                                videoId
+                            )}', '_blank', 'noopener,noreferrer')"
+                        >
+                            Open video
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+    };
+
+    // ---------------------------------------------------------
+    // Favorites
+    // ---------------------------------------------------------
+
+    window.cvFavorite = function (videoId) {
+        if (!videoId) return;
+
+        const existing = state.favorites.find(
+            video => video.id === videoId
+        );
+
+        if (existing) {
+            state.favorites = state.favorites.filter(
+                video => video.id !== videoId
+            );
+        } else {
+            state.favorites.unshift({
+                id: videoId,
+                title: "Chox Video",
+                description: "",
+                url: youtubeUrl(videoId),
+                thumbnail: thumbnailUrl(videoId),
+                savedAt: Date.now()
+            });
+        }
+
+        saveState();
+
+        console.log("Chox Video favorites updated.");
+    };
+
+    // ---------------------------------------------------------
+    // Saved pages
+    // ---------------------------------------------------------
+
+    window.cvShowSaved = function (tabId, type) {
+        const navIndex = {
+            history: 2,
+            favorites: 3,
+            subscriptions: 4
+        };
+
+        cvSetActiveNav(
+            tabId,
+            navIndex[type] !== undefined ? navIndex[type] : 0
+        );
+
+        cvRenderSaved(tabId, type);
+    };
+
+    window.cvRenderSaved = function (tabId, type) {
+        const content = document.getElementById(`cv-content-${tabId}`);
+
+        if (!content) return;
+
+        const titles = {
+            history: "History",
+            favorites: "Favorites",
+            subscriptions: "Subscriptions"
+        };
+
+        const items = state[type] || [];
+
+        if (!items.length) {
+            content.innerHTML = `
+                <div class="cv-empty">
+
+                    <div class="cv-empty-icon">
+                        ${
+                            type === "history"
+                                ? "◷"
+                                : type === "favorites"
+                                ? "★"
+                                : "♥"
+                        }
+                    </div>
+
+                    <h2>
+                        No ${escapeHTML(
+                            titles[type].toLowerCase()
+                        )} yet
+                    </h2>
+
+                    <p>
+                        Videos you save here will appear in this section.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        content.innerHTML = `
+            <div class="cv-page-heading">
+                <h1>${escapeHTML(titles[type])}</h1>
+                <p>
+                    ${items.length} saved item${
+            items.length === 1 ? "" : "s"
+        }
+                </p>
+            </div>
+
+            <div class="cv-grid">
+                ${items
+                    .map(video => createVideoCard(video, tabId))
+                    .join("")}
+            </div>
+        `;
+    };
+
+    // ---------------------------------------------------------
+    // Navigation
+    // ---------------------------------------------------------
+
+    function cvSetActiveNav(tabId, index) {
+        const container = document.getElementById(`page-${tabId}`);
+
+        if (!container) return;
+
+        const buttons = container.querySelectorAll(".cv-nav");
+
+        buttons.forEach((button, i) => {
+            button.classList.toggle("active", i === index);
+        });
+    }
+
+    window.cvToggleSidebar = function (tabId) {
+        const container = document.getElementById(`page-${tabId}`);
+
+        if (!container) return;
+
+        const sidebar = container.querySelector(
+            ".chox-video-sidebar"
+        );
+
+        if (sidebar) {
+            sidebar.classList.toggle("open");
+        }
+    };
+
+    // ---------------------------------------------------------
+    // Keyboard shortcuts
+    // ---------------------------------------------------------
+
+    document.addEventListener("keydown", function (event) {
+        const activeInput =
+            document.activeElement &&
+            (
+                document.activeElement.tagName === "INPUT" ||
+                document.activeElement.tagName === "TEXTAREA"
+            );
+
+        if (activeInput) return;
+
+        if (event.key === "/") {
+            const input = document.querySelector(
+                ".cv-search input"
+            );
+
+            if (input) {
+                event.preventDefault();
+                input.focus();
+            }
+        }
+    });
+
+})();
