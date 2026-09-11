@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chox Browser</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #111;
+    color: white;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.browser {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #171717;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tab-bar {
+    height: 46px;
+    background: #202020;
+    display: flex;
+    align-items: flex-end;
+    padding: 6px 8px 0;
+    gap: 5px;
+    border-bottom: 1px solid #333;
+}
+
+.tabs {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    min-width: 0;
+    overflow-x: auto;
+    height: 100%;
+}
+
+.tabs::-webkit-scrollbar {
+    height: 3px;
+}
+
+.tabs::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 5px;
+}
+
+.tab {
+    height: 38px;
+    min-width: 150px;
+    max-width: 230px;
+    padding: 0 8px 0 14px;
+    background: #2b2b2b;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    color: #aaa;
+    border: 1px solid #333;
+    border-bottom: none;
+}
+
+.tab.active {
+    background: #303030;
+    color: white;
+}
+
+.tab-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+}
+
+.tab-close {
+    width: 25px;
+    height: 25px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #aaa;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.tab-close:hover {
+    background: #444;
+    color: white;
+}
+
+.new-tab {
+    width: 38px;
+    height: 36px;
+    margin-bottom: 1px;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.new-tab:hover {
+    background: #333;
+}
+
+/* =========================
+   TOOLBAR
+========================= */
+
+.toolbar {
+    height: 58px;
+    background: #242424;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-bottom: 1px solid #333;
+}
+
+.toolbar-button {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: #ddd;
+    font-size: 19px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.toolbar-button:hover {
+    background: #383838;
+    color: white;
+}
+
+.toolbar-button:active {
+    transform: scale(.94);
+}
+
+.address-container {
+    flex: 1;
+    height: 40px;
+    background: #181818;
+    border: 1px solid #3b3b3b;
+    border-radius: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    transition: .2s;
+}
+
+.address-container:focus-within {
+    border-color: #777;
+    background: #151515;
+}
+
+.address-icon {
+    margin-right: 8px;
+    color: #aaa;
+}
+
+.address-bar {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+    font-size: 14px;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #111;
+}
+
+.tab-page {
+    position: absolute;
+    inset: 0;
+    display: none;
+}
+
+.tab-page.active {
+    display: block;
+}
+
+/* =========================
+   HOME PAGE
+========================= */
+
+.home-page {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 50px 20px;
+    background:
+        radial-gradient(circle at top, #303030 0%, #171717 35%, #101010 100%);
+}
+
+.home-inner {
+    width: min(900px, 100%);
+    margin: auto;
+    text-align: center;
+}
+
+.logo {
+    font-size: 70px;
+    font-weight: 800;
+    letter-spacing: -5px;
+    margin-bottom: 8px;
+}
+
+.logo span {
+    color: #e53935;
+}
+
+.subtitle {
+    color: #999;
+    margin-bottom: 35px;
+    font-size: 15px;
+}
+
+.search-form {
+    width: min(720px, 100%);
+    height: 58px;
+    margin: auto;
+    display: flex;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 10px 35px rgba(0,0,0,.35);
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+    padding: 0 22px;
+    font-size: 16px;
+}
+
+.search-button {
+    width: 120px;
+    border: none;
+    background: #e53935;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background: #f04440;
+}
+
+.safe-search {
+    margin-top: 14px;
+    color: #999;
+    font-size: 13px;
+}
+
+.quick-title {
+    margin-top: 55px;
+    margin-bottom: 18px;
+    color: #aaa;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.quick-links {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.quick-link {
+    padding: 18px 10px;
+    border-radius: 14px;
+    background: #222;
+    border: 1px solid #363636;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.quick-link:hover {
+    transform: translateY(-2px);
+    background: #2b2b2b;
+    border-color: #555;
+}
+
+.quick-icon {
+    display: block;
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.quick-name {
+    font-size: 13px;
+}
+
+/* =========================
+   WEBSITE FRAME
+========================= */
+
+.site-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+/* =========================
+   BLOCKED MESSAGE
+========================= */
+
+.blocked-page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    background: #111;
+}
+
+.blocked-box {
+    max-width: 600px;
+    background: #202020;
+    border: 1px solid #3b3b3b;
+    border-radius: 20px;
+    padding: 35px;
+}
+
+.blocked-box h2 {
+    margin-top: 0;
+}
+
+.blocked-box p {
+    color: #aaa;
+    line-height: 1.6;
+}
+
+.blocked-button {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    background: #e53935;
+    color: white;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* =========================
+   MENU
+========================= */
+
+.menu {
+    position: absolute;
+    right: 12px;
+    top: 55px;
+    width: 180px;
+    background: #252525;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.5);
+    display: none;
+    z-index: 1000;
+}
+
+.menu.show {
+    display: block;
+}
+
+.menu button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: white;
+    text-align: left;
+    padding: 11px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu button:hover {
+    background: #383838;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+    .tab {
+        min-width: 125px;
+    }
+
+    .toolbar {
+        gap: 3px;
+        padding: 7px;
+    }
+
+    .toolbar-button {
+        width: 34px;
+        height: 34px;
+    }
+
+    .logo {
+        font-size: 55px;
+    }
+
+    .home-page {
+        padding-top: 35px;
+    }
+}
+</style>
+<script src="chox-video.js"></script>
+<link rel="stylesheet" href="chox-video.css">
+</head>
+
+<body>
+
+<div class="browser">
+
+    <!-- =========================
+         TAB BAR
+    ========================== -->
+
+    <div class="tab-bar">
+
+        <div class="tabs" id="tabs"></div>
+
+        <button
+            class="new-tab"
+            onclick="createNewTab()"
+            title="New Tab">
+            +
+        </button>
+
+    </div>
+
+    <!-- =========================
+         TOOLBAR
+    ========================== -->
+
+    <div class="toolbar">
+
+        <button
+            class="toolbar-button"
+            onclick="goBack()"
+            title="Back">
+            ←
+        </button>
+
+        <button
+            class="toolbar-button"
+            onclick="goForward()"
+            title="Forward">
+            →
+        </button>
+
+        <button
+            class="toolbar-button"
+            onclick="reloadPage()"
+            title="Reload">
+            ↻
+        </button>
+
+        <button
+            class="toolbar-button"
+            onclick="goHome()"
+            title="Home">
+            ⌂
+        </button>
+
+        <div class="address-container">
+
+            <span class="address-icon">🔒</span>
+
+            <input
+                id="addressBar"
+                class="address-bar"
+                type="text"
+                placeholder="Search or enter website address"
+                autocomplete="off"
+                onkeydown="addressKey(event)"
+            >
+
+        </div>
+
+        <button
+            class="toolbar-button"
+            onclick="bookmarkPage()"
+            title="Bookmark">
+            ☆
+        </button>
+
+        <button
+            class="toolbar-button"
+            onclick="toggleMenu()"
+            title="Menu">
+            ⋮
+        </button>
+
+    </div>
+
+    <!-- =========================
+         CONTENT
+    ========================== -->
+
+    <div class="content" id="content"></div>
+
+    <!-- MENU -->
+
+    <div class="menu" id="menu">
+
+        <button onclick="createNewTab(); closeMenu();">
+            ➕ New Tab
+        </button>
+
+        <button onclick="closeActiveTab(); closeMenu();">
+            ✕ Close Tab
+        </button>
+
+        <button onclick="goHome(); closeMenu();">
+            ⌂ Home
+        </button>
+
+        <button onclick="bookmarkPage(); closeMenu();">
+            ☆ Bookmark
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CHOX INTERNAL TAB SYSTEM
+========================================================= */
+
+let tabs = [];
+let activeTabId = null;
+let tabCounter = 0;
+
+
+/* =========================================================
+   CREATE TAB
+========================================================= */
+
+function createNewTab() {
+
+    tabCounter++;
+
+    const id = "tab-" + tabCounter;
+
+    const tab = {
+        id: id,
+        title: "New Tab",
+        url: "",
+        type: "home",
+        history: [],
+        historyIndex: -1
+    };
+
+    tabs.push(tab);
+
+    createTabButton(tab);
+    createTabPage(tab);
+
+    switchTab(id);
+}
+
+
+/* =========================================================
+   CREATE TAB BUTTON
+========================================================= */
+
+function createTabButton(tab) {
+
+    const tabsContainer = document.getElementById("tabs");
+
+    const button = document.createElement("div");
+
+    button.className = "tab";
+    button.dataset.id = tab.id;
+
+    button.innerHTML = `
+        <span class="tab-title">${escapeHTML(tab.title)}</span>
+        <button class="tab-close" title="Close Tab">×</button>
+    `;
+
+    button.addEventListener("click", function () {
+
+        switchTab(tab.id);
+
+    });
+
+    button.querySelector(".tab-close").addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            closeTab(tab.id);
+
+        }
+    );
+
+    tabsContainer.appendChild(button);
+}
+
+
+/* =========================================================
+   CREATE PAGE
+========================================================= */
+
+function createTabPage(tab) {
+
+    const content = document.getElementById("content");
+
+    const page = document.createElement("div");
+
+    page.className = "tab-page";
+    page.id = "page-" + tab.id;
+
+    content.appendChild(page);
+
+    renderHome(tab);
+
+}
+
+
+/* =========================================================
+   RENDER HOME
+========================================================= */
+
+function renderHome(tab) {
+
+    const page = document.getElementById("page-" + tab.id);
+
+    if (!page) return;
+
+    page.innerHTML = `
+
+        <div class="home-page">
+
+            <div class="home-inner">
+
+                <div class="logo">
+                    Ch<span>o</span>x
+                </div>
+
+                <div class="subtitle">
+                    A simple, fast web experience
+                </div>
+
+                <form
+                    class="search-form"
+                    onsubmit="homeSearch(event, '${tab.id}')"
+                >
+
+                    <input
+                        class="search-input"
+                        id="home-search-${tab.id}"
+                        type="text"
+                        placeholder="Search the web..."
+                        autocomplete="off"
+                    >
+
+                    <button class="search-button">
+                        Search
+                    </button>
+
+                </form>
+
+                <div class="safe-search">
+                    🛡 SafeSearch enabled
+                </div>
+
+                <div class="quick-title">
+                    Quick Links
+                </div>
+
+                <div class="quick-links">
+
+                    <a
+                        class="quick-link"
+                        href="https://www.youtube.com/"
+                        onclick="openQuickLink(event, '${tab.id}', this.href, 'YouTube')"
+                    >
+                        <span class="quick-icon">▶</span>
+                        <span class="quick-name">YouTube</span>
+                    </a>
+
+                    <a
+                        class="quick-link chox-video-link"
+                        href="chox://video"
+                        onclick="event.preventDefault(); openChoxVideo('${tab.id}')"
+                    >
+                        <span class="quick-icon">▶</span>
+                        <span class="quick-name">Chox Video</span>
+                    </a>
+
+                    <a
+                        class="quick-link"
+                        href="https://www.google.com/"
+                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Google')"
+                    >
+                        <span class="quick-icon">G</span>
+                        <span class="quick-name">Google</span>
+                    </a>
+
+                    <a
+                        class="quick-link"
+                        href="https://www.facebook.com/"
+                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Facebook')"
+                    >
+                        <span class="quick-icon">f</span>
+                        <span class="quick-name">Facebook</span>
+                    </a>
+
+                    <a
+                        class="quick-link"
+                        href="https://www.instagram.com/"
+                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Instagram')"
+                    >
+                        <span class="quick-icon">◎</span>
+                        <span class="quick-name">Instagram</span>
+                    </a>
+
+                    <a
+                        class="quick-link"
+                        href="https://github.com/"
+                        onclick="openQuickLink(event, '${tab.id}', this.href, 'GitHub')"
+                    >
+                        <span class="quick-icon">◉</span>
+                        <span class="quick-name">GitHub</span>
+                    </a>
+
+                    <a
+                        class="quick-link"
+                        href="https://www.reddit.com/"
+                        onclick="openQuickLink(event, '${tab.id}', this.href, 'Reddit')"
+                    >
+                        <span class="quick-icon">●</span>
+                        <span class="quick-name">Reddit</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   HOME SEARCH
+========================================================= */
+
+function homeSearch(event, tabId) {
+
+    event.preventDefault();
+
+    const input = document.getElementById(
+        "home-search-" + tabId
+    );
+
+    if (!input) return;
+
+    const query = input.value.trim();
+
+    if (!query) return;
+
+    performSearch(tabId, query);
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+function performSearch(tabId, query) {
+
+    const url =
+        "results.html?q=" +
+        encodeURIComponent(query);
+
+    const tab = tabs.find(t => t.id === tabId);
+
+    if (!tab) return;
+
+    navigateTab(
+        tab,
+        url,
+        "Search - " + query
+    );
+
+    switchTab(tab.id);
+}
+
+
+/* =========================================================
+   QUICK LINK
+========================================================= */
+
+function openQuickLink(
+    event,
+    tabId,
+    url,
+    title
+) {
+
+    event.preventDefault();
+
+    const tab = tabs.find(t => t.id === tabId);
+
+    if (!tab) return;
+
+    navigateTab(tab, url, title);
+
+    switchTab(tab.id);
+}
+
+
+/* =========================================================
+   NAVIGATE TAB
+========================================================= */
+
+function navigateTab(tab, url, title) {
+
+    tab.type = "site";
+    tab.url = url;
+    tab.title = title || url;
+
+    /*
+        Add to our internal history.
+    */
+
+    if (
+        tab.historyIndex < tab.history.length - 1
+    ) {
+
+        tab.history =
+            tab.history.slice(
+                0,
+                tab.historyIndex + 1
+            );
+
+    }
+
+    tab.history.push(url);
+
+    tab.historyIndex =
+        tab.history.length - 1;
+
+
+    const page =
+        document.getElementById(
+            "page-" + tab.id
+        );
+
+    if (!page) return;
+
+    page.innerHTML = "";
+
+    const iframe =
+        document.createElement("iframe");
+
+    iframe.className = "site-frame";
+
+    iframe.src = url;
+
+    iframe.setAttribute(
+        "allow",
+        "fullscreen; autoplay; clipboard-read; clipboard-write"
+    );
+
+    iframe.setAttribute(
+        "sandbox",
+        "allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
+    );
+
+    page.appendChild(iframe);
+
+    updateTabButton(tab);
+
+    if (activeTabId === tab.id) {
+
+        updateAddressBar();
+
+    }
+
+}
+
+
+/* =========================================================
+   SWITCH TAB
+========================================================= */
+
+function switchTab(id) {
+
+    const tab = tabs.find(t => t.id === id);
+
+    if (!tab) return;
+
+    activeTabId = id;
+
+    document.querySelectorAll(".tab").forEach(
+        element => {
+
+            element.classList.toggle(
+                "active",
+                element.dataset.id === id
+            );
+
+        }
+    );
+
+    document.querySelectorAll(".tab-page").forEach(
+        element => {
+
+            element.classList.remove("active");
+
+        }
+    );
+
+    const page =
+        document.getElementById(
+            "page-" + id
+        );
+
+    if (page) {
+
+        page.classList.add("active");
+
+    }
+
+    updateAddressBar();
+
+}
+
+
+/* =========================================================
+   UPDATE TAB BUTTON
+========================================================= */
+
+function updateTabButton(tab) {
+
+    const button =
+        document.querySelector(
+            `.tab[data-id="${tab.id}"]`
+        );
+
+    if (!button) return;
+
+    const title =
+        button.querySelector(".tab-title");
+
+    if (title) {
+
+        title.textContent =
+            tab.title || "New Tab";
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE TAB
+========================================================= */
+
+function closeTab(id) {
+
+    const index =
+        tabs.findIndex(t => t.id === id);
+
+    if (index === -1) return;
+
+    const wasActive =
+        activeTabId === id;
+
+    tabs.splice(index, 1);
+
+    const button =
+        document.querySelector(
+            `.tab[data-id="${id}"]`
+        );
+
+    if (button) {
+
+        button.remove();
+
+    }
+
+    const page =
+        document.getElementById(
+            "page-" + id
+        );
+
+    if (page) {
+
+        page.remove();
+
+    }
+
+
+    /*
+        If the last tab was closed,
+        automatically create a new tab.
+    */
+
+    if (tabs.length === 0) {
+
+        createNewTab();
+
+        return;
+
+    }
+
+
+    if (wasActive) {
+
+        const newIndex =
+            Math.max(
+                0,
+                Math.min(index, tabs.length - 1)
+            );
+
+        switchTab(
+            tabs[newIndex].id
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE ACTIVE TAB
+========================================================= */
+
+function closeActiveTab() {
+
+    if (!activeTabId) return;
+
+    closeTab(activeTabId);
+
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+function goHome() {
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab) return;
+
+    tab.type = "home";
+    tab.url = "";
+    tab.title = "New Tab";
+
+    const page =
+        document.getElementById(
+            "page-" + tab.id
+        );
+
+    if (page) {
+
+        renderHome(tab);
+
+    }
+
+    updateTabButton(tab);
+    updateAddressBar();
+
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function goBack() {
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab) return;
+
+    if (tab.historyIndex <= 0) {
+
+        return;
+
+    }
+
+    tab.historyIndex--;
+
+    const previous =
+        tab.history[tab.historyIndex];
+
+    if (!previous) return;
+
+    loadHistoryEntry(
+        tab,
+        previous
+    );
+
+}
+
+
+/* =========================================================
+   FORWARD
+========================================================= */
+
+function goForward() {
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab) return;
+
+    if (
+        tab.historyIndex >=
+        tab.history.length - 1
+    ) {
+
+        return;
+
+    }
+
+    tab.historyIndex++;
+
+    const next =
+        tab.history[tab.historyIndex];
+
+    if (!next) return;
+
+    loadHistoryEntry(
+        tab,
+        next
+    );
+
+}
+
+
+/* =========================================================
+   LOAD HISTORY
+========================================================= */
+
+function loadHistoryEntry(tab, url) {
+
+    tab.type = "site";
+    tab.url = url;
+
+    const page =
+        document.getElementById(
+            "page-" + tab.id
+        );
+
+    if (!page) return;
+
+    page.innerHTML = "";
+
+    const iframe =
+        document.createElement("iframe");
+
+    iframe.className = "site-frame";
+    iframe.src = url;
+
+    iframe.setAttribute(
+        "allow",
+        "fullscreen; autoplay; clipboard-read; clipboard-write"
+    );
+
+    iframe.setAttribute(
+        "sandbox",
+        "allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-presentation allow-same-origin allow-scripts"
+    );
+
+    page.appendChild(iframe);
+
+    updateAddressBar();
+
+}
+
+
+/* =========================================================
+   RELOAD
+========================================================= */
+
+function reloadPage() {
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab) return;
+
+    if (tab.type === "home") {
+
+        renderHome(tab);
+
+        return;
+
+    }
+
+    const page =
+        document.getElementById(
+            "page-" + tab.id
+        );
+
+    if (!page) return;
+
+    const iframe =
+        page.querySelector("iframe");
+
+    if (iframe) {
+
+        iframe.src = iframe.src;
+
+    }
+
+}
+
+
+/* =========================================================
+   ADDRESS BAR
+========================================================= */
+
+function addressKey(event) {
+
+    if (event.key === "Enter") {
+
+        openAddress();
+
+    }
+
+}
+
+
+function openAddress() {
+
+    const input =
+        document.getElementById(
+            "addressBar"
+        );
+
+    const value =
+        input.value.trim();
+
+    if (!value) return;
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab) return;
+
+
+    /*
+        If it looks like a URL,
+        open the website.
+    */
+
+    if (
+        value.startsWith("http://") ||
+        value.startsWith("https://")
+    ) {
+
+        navigateTab(
+            tab,
+            value,
+            getDomainName(value)
+        );
+
+        return;
+
+    }
+
+
+    if (
+        value.includes(".") &&
+        !value.includes(" ")
+    ) {
+
+        navigateTab(
+            tab,
+            "https://" + value,
+            value
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Otherwise perform a Chox search.
+    */
+
+    performSearch(
+        tab.id,
+        value
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE ADDRESS BAR
+========================================================= */
+
+function updateAddressBar() {
+
+    const input =
+        document.getElementById(
+            "addressBar"
+        );
+
+    if (!input) return;
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab) return;
+
+    input.value =
+        tab.url || "";
+
+}
+
+
+/* =========================================================
+   BOOKMARK
+========================================================= */
+
+function bookmarkPage() {
+
+    const tab =
+        tabs.find(t => t.id === activeTabId);
+
+    if (!tab || !tab.url) {
+
+        alert("There is no page to bookmark.");
+
+        return;
+
+    }
+
+    let bookmarks =
+        JSON.parse(
+            localStorage.getItem(
+                "choxBookmarks"
+            ) || "[]"
+        );
+
+    const exists =
+        bookmarks.some(
+            item => item.url === tab.url
+        );
+
+    if (!exists) {
+
+        bookmarks.push({
+            title: tab.title,
+            url: tab.url
+        });
+
+        localStorage.setItem(
+            "choxBookmarks",
+            JSON.stringify(bookmarks)
+        );
+
+        alert("⭐ Bookmark saved!");
+
+    } else {
+
+        alert("⭐ This page is already bookmarked.");
+
+    }
+
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function toggleMenu() {
+
+    document
+        .getElementById("menu")
+        .classList.toggle("show");
+
+}
+
+
+function closeMenu() {
+
+    document
+        .getElementById("menu")
+        .classList.remove("show");
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getDomainName(url) {
+
+    try {
+
+        return new URL(url).hostname
+            .replace("www.", "");
+
+    } catch {
+
+        return "Website";
+
+    }
+
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================================
+   START CHOX
+========================================================= */
+
+createNewTab();
+
+
+/* =========================================================
+   CLOSE MENU WHEN CLICKING OUTSIDE
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const menu =
+            document.getElementById("menu");
+
+        const menuButton =
+            event.target.closest(
+                '[title="Menu"]'
+            );
+
+        if (
+            !menu.contains(event.target) &&
+            !menuButton
+        ) {
+
+            closeMenu();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
