@@ -1,0 +1,7 @@
+Chox + FreeTube integration
+
+The directory ./freetube contains source from the FreeTube project.
+FreeTube is licensed under GNU Affero General Public License version 3 or later (AGPL-3.0-or-later).
+See ./freetube/LICENSE and ./freetube/README.md for the upstream license and attribution information.
+
+The Chox integration code is contained in the top-level Chox files.
